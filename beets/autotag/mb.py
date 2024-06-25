@@ -35,6 +35,54 @@ from beets.util.id_extractors import (
     spotify_id_regex,
 )
 
+from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
+
+branch_coverage_configure = {
+    "configure1" : False,
+    "configure2" : False
+}
+
+branch_coverage_track_info = {
+    "track_info1" : False,
+    "track_info2" : False,
+    "track_info3" : False,
+    "track_info4" : False,
+    "track_info5" : False,
+    "track_info6" : False,
+    "track_info7" : False,
+    "track_info8" : False,
+    "track_info9" : False,
+    "track_info10" : False,
+    "track_info11" : False,
+    "track_info12" : False,
+    "track_info13" : False,
+    "track_info14" : False,
+    "track_info15" : False,
+    "track_info16" : False,
+    "track_info17" : False,
+    "track_info18" : False,
+    "track_info19" : False,
+    "track_info20" : False,
+    "track_info21" : False,
+    "track_info22" : False,
+    "track_info23" : False,
+    "track_info24" : False,
+    "track_info25" : False,
+    "track_info26" : False,
+    "track_info27" : False,
+    "track_info28" : False,
+    "track_info29" : False,
+    "track_info30" : False,
+    "track_info31" : False,
+    "track_info32" : False,
+    "track_info33" : False,
+    "track_info34" : False,
+    "track_info35" : False
+}
+
+register_coverage_tracker(branch_coverage_configure, 'text_file_configure.txt')
+register_coverage_tracker(branch_coverage_track_info, 'text_file_track_info.txt')       
+
 VARIOUS_ARTISTS_ID = "89ad4ac3-39f7-470e-963a-56509c546377"
 
 BASE_URL = "https://musicbrainz.org/"
@@ -124,6 +172,9 @@ def configure():
     # musicbrainz-ngs connects to musicbrainz.org with HTTPS by default
     if hostname != "musicbrainz.org":
         musicbrainzngs.set_hostname(hostname, https)
+        branch_coverage_configure["configure1"] = True
+    else:
+        branch_coverage_configure["configure2"] = True
     musicbrainzngs.set_rate_limit(
         config["musicbrainz"]["ratelimit_interval"].as_number(),
         config["musicbrainz"]["ratelimit"].get(int),
@@ -300,6 +351,7 @@ def track_info(
     )
 
     if recording.get("artist-credit"):
+        branch_coverage_track_info["track_info1"] = True
         # Get the artist names.
         (
             info.artist,
@@ -317,60 +369,111 @@ def track_info(
 
         info.artists_ids = _artist_ids(recording["artist-credit"])
         info.artist_id = info.artists_ids[0]
+    else:
+        branch_coverage_track_info["track_info2"] = True
 
     if recording.get("artist-relation-list"):
+        branch_coverage_track_info["track_info3"] = True
         info.remixer = _get_related_artist_names(
             recording["artist-relation-list"], relation_type="remixer"
         )
+    else:
+        branch_coverage_track_info["track_info4"] = True
 
     if recording.get("length"):
+        branch_coverage_track_info["track_info5"] = True
         info.length = int(recording["length"]) / 1000.0
+    else:
+        branch_coverage_track_info["track_info6"] = True
 
     info.trackdisambig = recording.get("disambiguation")
 
     if recording.get("isrc-list"):
+        branch_coverage_track_info["track_info7"] = True
         info.isrc = ";".join(recording["isrc-list"])
+    else:
+        branch_coverage_track_info["track_info8"] = True
 
     lyricist = []
     composer = []
     composer_sort = []
     for work_relation in recording.get("work-relation-list", ()):
+        branch_coverage_track_info["track_info9"] = True
         if work_relation["type"] != "performance":
+            branch_coverage_track_info["track_info10"] = True
             continue
+        else:
+            branch_coverage_track_info["track_info11"] = True
         info.work = work_relation["work"]["title"]
         info.mb_workid = work_relation["work"]["id"]
         if "disambiguation" in work_relation["work"]:
+            branch_coverage_track_info["track_info12"] = True
             info.work_disambig = work_relation["work"]["disambiguation"]
+        else:
+            branch_coverage_track_info["track_info13"] = True
 
         for artist_relation in work_relation["work"].get(
             "artist-relation-list", ()
         ):
+            branch_coverage_track_info["track_info14"] = True
             if "type" in artist_relation:
+                branch_coverage_track_info["track_info15"] = True
                 type = artist_relation["type"]
                 if type == "lyricist":
+                    branch_coverage_track_info["track_info16"] = True
                     lyricist.append(artist_relation["artist"]["name"])
                 elif type == "composer":
+                    branch_coverage_track_info["track_info17"] = True
                     composer.append(artist_relation["artist"]["name"])
                     composer_sort.append(artist_relation["artist"]["sort-name"])
+                else:
+                    branch_coverage_track_info["track_info18"] = True
+            else:
+                branch_coverage_track_info["track_info19"] = True
+        else:
+            branch_coverage_track_info["track_info20"] = True
+    else:
+        branch_coverage_track_info["track_info21"] = True
     if lyricist:
+        branch_coverage_track_info["track_info22"] = True
         info.lyricist = ", ".join(lyricist)
+    else:
+        branch_coverage_track_info["track_info23"] = True
     if composer:
+        branch_coverage_track_info["track_info24"] = True
         info.composer = ", ".join(composer)
         info.composer_sort = ", ".join(composer_sort)
+    else:
+        branch_coverage_track_info["track_info25"] = True
 
     arranger = []
     for artist_relation in recording.get("artist-relation-list", ()):
+        branch_coverage_track_info["track_info26"] = True
         if "type" in artist_relation:
+            branch_coverage_track_info["track_info27"] = True
             type = artist_relation["type"]
             if type == "arranger":
+                branch_coverage_track_info["track_info28"] = True
                 arranger.append(artist_relation["artist"]["name"])
+            else:
+                branch_coverage_track_info["track_info29"] = True
+        else:
+            branch_coverage_track_info["track_info30"] = True
+    else:
+        branch_coverage_track_info["track_info31"] = True
     if arranger:
+        branch_coverage_track_info["track_info32"] = True
         info.arranger = ", ".join(arranger)
+    else:
+        branch_coverage_track_info["track_info33"] = True
 
     # Supplementary fields provided by plugins
     extra_trackdatas = plugins.send("mb_track_extract", data=recording)
     for extra_trackdata in extra_trackdatas:
+        branch_coverage_track_info["track_info34"] = True
         info.update(extra_trackdata)
+    else:
+        branch_coverage_track_info["track_info35"] = True
 
     info.decode()
     return info
@@ -687,6 +790,29 @@ def album_info(release: Dict) -> beets.autotag.hooks.AlbumInfo:
     return info
 
 
+branch_coverage_match_album = {
+    "match_album1" : False,
+    "match_album2" : False,
+    "match_album3" : False,
+    "match_album4" : False,
+    "match_album5" : False,
+    "match_album6" : False,
+    "match_album7" : False,
+    "match_album8" : False,
+    "match_album9" : False,
+    "match_album10" : False,
+    "match_album11" : False,
+    "match_album12" : False,
+    "match_album13" : False,
+    "match_album14" : False,
+    "match_album15" : False,
+    "match_album16" : False,
+    "match_album17" : False,
+    "match_album18" : False
+}
+
+register_coverage_tracker(branch_coverage_match_album, 'match_album_coverage.txt')
+
 def match_album(
     artist: str,
     album: str,
@@ -703,26 +829,46 @@ def match_album(
     # Build search criteria.
     criteria = {"release": album.lower().strip()}
     if artist is not None:
+        branch_coverage_match_album["match_album1"] = True
         criteria["artist"] = artist.lower().strip()
     else:
         # Various Artists search.
+        branch_coverage_match_album["match_album2"] = True
         criteria["arid"] = VARIOUS_ARTISTS_ID
     if tracks is not None:
+        branch_coverage_match_album["match_album3"] = True
         criteria["tracks"] = str(tracks)
+    else:
+        branch_coverage_match_album["match_album4"] = True
 
     # Additional search cues from existing metadata.
     if extra_tags:
+        branch_coverage_match_album["match_album5"] = True
         for tag, value in extra_tags.items():
+            branch_coverage_match_album["match_album6"] = True
             key = FIELDS_TO_MB_KEYS[tag]
             value = str(value).lower().strip()
             if key == "catno":
+                branch_coverage_match_album["match_album7"] = True
                 value = value.replace(" ", "")
+            else:
+                branch_coverage_match_album["match_album8"] = True
             if value:
+                branch_coverage_match_album["match_album9"] = True
                 criteria[key] = value
+            else:
+                branch_coverage_match_album["match_album10"] = True
+        else:
+            branch_coverage_match_album["match_album11"] = True
+    else:
+        branch_coverage_match_album["match_album12"] = True
 
     # Abort if we have no search terms.
     if not any(criteria.values()):
+        branch_coverage_match_album["match_album13"] = True
         return
+    else:
+        branch_coverage_match_album["match_album14"] = True
 
     try:
         log.debug("Searching for MusicBrainz releases with: {!r}", criteria)
@@ -736,10 +882,15 @@ def match_album(
     for release in res["release-list"]:
         # The search result is missing some data (namely, the tracks),
         # so we just use the ID and fetch the rest of the information.
+        branch_coverage_match_album["match_album15"] = True
         albuminfo = album_for_id(release["id"])
         if albuminfo is not None:
+            branch_coverage_match_album["match_album16"] = True
             yield albuminfo
-
+        else:
+            branch_coverage_match_album["match_album17"] = True
+    else:
+        branch_coverage_match_album["match_album18"] = True
 
 def match_track(
     artist: str,

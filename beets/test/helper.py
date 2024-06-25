@@ -50,6 +50,7 @@ from beets.library import Album, Item, Library
 from beets.test import _common
 from beets.ui.commands import TerminalImportSession
 from beets.util import MoveOperation, bytestring_path, syspath
+from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
 
 
 class LogCapture(logging.Handler):
@@ -118,20 +119,35 @@ def _convert_args(args):
     return args
 
 
+branch_coverage_has_program = {
+    "has_program_try": False,
+    "has_program_os_error": False,
+    "has_program_called_process_error": False,
+    "has_program_else": False
+}
+
+register_coverage_tracker(branch_coverage_has_program, 'coverage_data_has_program.txt')
+
 def has_program(cmd, args=["--version"]):
     """Returns `True` if `cmd` can be executed."""
     full_cmd = _convert_args([cmd] + args)
+    
     try:
+        branch_coverage_has_program["has_program_try"] = True
         with open(os.devnull, "wb") as devnull:
             subprocess.check_call(
                 full_cmd, stderr=devnull, stdout=devnull, stdin=devnull
             )
     except OSError:
+        branch_coverage_has_program["has_program_os_error"] = True
         return False
     except subprocess.CalledProcessError:
+        branch_coverage_has_program["has_program_called_process_error"] = True
         return False
     else:
+        branch_coverage_has_program["has_program_else"] = True
         return True
+
 
 
 class TestHelper:

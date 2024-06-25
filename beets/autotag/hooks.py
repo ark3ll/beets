@@ -42,6 +42,8 @@ from beets.library import Item
 from beets.util import as_string, cached_classproperty
 from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
 
+from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
+
 log = logging.getLogger("beets")
 
 V = TypeVar("V")
@@ -295,6 +297,15 @@ class TrackInfo(AttrDict):
         self.album = album
         self.update(kwargs)
 
+    branch_coverage_decode = {
+        "decode1" : False,
+        "decode2" : False,
+        "decode3" : False,
+        "decode4" : False,
+    }
+
+    register_coverage_tracker(branch_coverage_decode, 'decode_coverage.txt')
+
     # As above, work around a bug in python-musicbrainz-ngs.
     def decode(self, codec="utf-8"):
         """Ensure that all string attributes on this object are decoded
@@ -309,9 +320,16 @@ class TrackInfo(AttrDict):
             "artist_credit",
             "media",
         ]:
+            self.branch_coverage_decode["decode1"] = True
             value = getattr(self, fld)
             if isinstance(value, bytes):
+                self.branch_coverage_decode["decode2"] = True
                 setattr(self, fld, value.decode(codec, "ignore"))
+            else:
+                self.branch_coverage_decode["decode3"] = True
+        else:
+            self.branch_coverage_decode["decode4"] = True
+
 
     def copy(self) -> TrackInfo:
         dupe = TrackInfo()

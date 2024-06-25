@@ -1,0 +1,6 @@
+has_program_try was hit
+has_program_os_error was hit
+has_program_called_process_error was hit
+has_program_else was hit
+
+Coverage Percentage: 100.00%
