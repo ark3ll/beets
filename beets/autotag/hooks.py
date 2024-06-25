@@ -40,6 +40,7 @@ from beets import config, logging, plugins
 from beets.autotag import mb
 from beets.library import Item
 from beets.util import as_string, cached_classproperty
+from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
 
 from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
 
@@ -429,7 +430,21 @@ def string_dist(str1: Optional[str], str2: Optional[str]) -> float:
             penalty += weight * case_delta
 
     return base_dist + penalty
+griffiti_coverage_add = {
+    "add_dist_fail": False,  # if branch 0.0 < dist < 1.0 
+    "add_dist_good": False,   # else branch
+}
 
+griffiti_coverage_update = {
+    "update_dist_val_err": False,  # if branch 0.0 < dist < 1.0 
+    "update_dist_val_good": False,   # else branch
+    "update_dist_loop_enter": False,   # if branch for (dist)
+    "update_dist_loop_out": False   #  else branch
+}
+
+register_coverage_tracker(griffiti_coverage_add,"coverage_add.txt")
+
+register_coverage_tracker(griffiti_coverage_update,"coverage_update.txt")
 
 @total_ordering
 class Distance:
@@ -540,12 +555,17 @@ class Distance:
 
     def update(self, dist: "Distance"):
         """Adds all the distance penalties from `dist`."""
+        #griffin's second function!
         if not isinstance(dist, Distance):
+            griffiti_coverage_update["update_dist_val_err"] = True
             raise ValueError(
                 "`dist` must be a Distance object, not {}".format(type(dist))
             )
+        griffiti_coverage_update["update_dist_val_good"] = True
         for key, penalties in dist._penalties.items():
+            griffiti_coverage_update["update_dist_loop_enter"] = True
             self._penalties.setdefault(key, []).extend(penalties)
+        griffiti_coverage_update["update_dist_loop_out"] = True
 
     # Adding components.
 
@@ -565,8 +585,11 @@ class Distance:
         and 1.0, and will be added to any existing distance penalties
         for the same key.
         """
+        #Griffiti's First one :p :p :p
         if not 0.0 <= dist <= 1.0:
+            griffiti_coverage_add["add_dist_fail"] = True
             raise ValueError(f"`dist` must be between 0.0 and 1.0, not {dist}")
+        griffiti_coverage_add["add_dist_good"] = True
         self._penalties.setdefault(key, []).append(dist)
 
     def add_equality(
