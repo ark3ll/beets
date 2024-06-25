@@ -1,0 +1,6 @@
+decode1 was hit
+decode2 was hit
+decode3 was hit
+decode4 was hit
+
+Coverage Percentage: 100.00%
