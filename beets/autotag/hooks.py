@@ -42,8 +42,6 @@ from beets.library import Item
 from beets.util import as_string, cached_classproperty
 from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
 
-from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
-
 log = logging.getLogger("beets")
 
 V = TypeVar("V")
@@ -304,7 +302,7 @@ class TrackInfo(AttrDict):
         "decode4" : False,
     }
 
-    register_coverage_tracker(branch_coverage_decode, 'decode_coverage.txt')
+    register_coverage_tracker(branch_coverage_decode, 'coverage_data_decode.txt')
 
     # As above, work around a bug in python-musicbrainz-ngs.
     def decode(self, codec="utf-8"):
@@ -442,9 +440,8 @@ griffiti_coverage_update = {
     "update_dist_loop_out": False   #  else branch
 }
 
-register_coverage_tracker(griffiti_coverage_add,"coverage_add.txt")
-
-register_coverage_tracker(griffiti_coverage_update,"coverage_update.txt")
+register_coverage_tracker(griffiti_coverage_add,"coverage_data_add.txt")
+register_coverage_tracker(griffiti_coverage_update,"coverage_data_update.txt")
 
 @total_ordering
 class Distance:

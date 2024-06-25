@@ -80,8 +80,8 @@ branch_coverage_track_info = {
     "track_info35" : False
 }
 
-register_coverage_tracker(branch_coverage_configure, 'text_file_configure.txt')
-register_coverage_tracker(branch_coverage_track_info, 'text_file_track_info.txt')       
+register_coverage_tracker(branch_coverage_configure, 'coverage_data_configure.txt')
+register_coverage_tracker(branch_coverage_track_info, 'coverage_data_track_info.txt')       
 
 VARIOUS_ARTISTS_ID = "89ad4ac3-39f7-470e-963a-56509c546377"
 
@@ -811,7 +811,7 @@ branch_coverage_match_album = {
     "match_album18" : False
 }
 
-register_coverage_tracker(branch_coverage_match_album, 'match_album_coverage.txt')
+register_coverage_tracker(branch_coverage_match_album, 'coverage_data_match_album.txt')
 
 def match_album(
     artist: str,
