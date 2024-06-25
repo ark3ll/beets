@@ -350,6 +350,12 @@ class TrackDistanceTest(_common.TestCase):
         dist = match.track_distance(item, info, incl_artist=True)
         self.assertNotEqual(dist, 0.0)
 
+    def test_decode_with_bytes(self):
+        info = _make_trackinfo()[0]
+        info.artist = "harman".encode()
+        info.decode()
+        self.assertEqual(info.artist, "harman")
+
     def test_various_artists_tolerated(self):
         item = _make_item("one", 1)
         item.artist = "Various Artists"

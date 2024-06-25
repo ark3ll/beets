@@ -790,6 +790,29 @@ def album_info(release: Dict) -> beets.autotag.hooks.AlbumInfo:
     return info
 
 
+branch_coverage_match_album = {
+    "match_album1" : False,
+    "match_album2" : False,
+    "match_album3" : False,
+    "match_album4" : False,
+    "match_album5" : False,
+    "match_album6" : False,
+    "match_album7" : False,
+    "match_album8" : False,
+    "match_album9" : False,
+    "match_album10" : False,
+    "match_album11" : False,
+    "match_album12" : False,
+    "match_album13" : False,
+    "match_album14" : False,
+    "match_album15" : False,
+    "match_album16" : False,
+    "match_album17" : False,
+    "match_album18" : False
+}
+
+register_coverage_tracker(branch_coverage_match_album, 'match_album_coverage.txt')
+
 def match_album(
     artist: str,
     album: str,
@@ -806,26 +829,46 @@ def match_album(
     # Build search criteria.
     criteria = {"release": album.lower().strip()}
     if artist is not None:
+        branch_coverage_match_album["match_album1"] = True
         criteria["artist"] = artist.lower().strip()
     else:
         # Various Artists search.
+        branch_coverage_match_album["match_album2"] = True
         criteria["arid"] = VARIOUS_ARTISTS_ID
     if tracks is not None:
+        branch_coverage_match_album["match_album3"] = True
         criteria["tracks"] = str(tracks)
+    else:
+        branch_coverage_match_album["match_album4"] = True
 
     # Additional search cues from existing metadata.
     if extra_tags:
+        branch_coverage_match_album["match_album5"] = True
         for tag, value in extra_tags.items():
+            branch_coverage_match_album["match_album6"] = True
             key = FIELDS_TO_MB_KEYS[tag]
             value = str(value).lower().strip()
             if key == "catno":
+                branch_coverage_match_album["match_album7"] = True
                 value = value.replace(" ", "")
+            else:
+                branch_coverage_match_album["match_album8"] = True
             if value:
+                branch_coverage_match_album["match_album9"] = True
                 criteria[key] = value
+            else:
+                branch_coverage_match_album["match_album10"] = True
+        else:
+            branch_coverage_match_album["match_album11"] = True
+    else:
+        branch_coverage_match_album["match_album12"] = True
 
     # Abort if we have no search terms.
     if not any(criteria.values()):
+        branch_coverage_match_album["match_album13"] = True
         return
+    else:
+        branch_coverage_match_album["match_album14"] = True
 
     try:
         log.debug("Searching for MusicBrainz releases with: {!r}", criteria)
@@ -839,10 +882,15 @@ def match_album(
     for release in res["release-list"]:
         # The search result is missing some data (namely, the tracks),
         # so we just use the ID and fetch the rest of the information.
+        branch_coverage_match_album["match_album15"] = True
         albuminfo = album_for_id(release["id"])
         if albuminfo is not None:
+            branch_coverage_match_album["match_album16"] = True
             yield albuminfo
-
+        else:
+            branch_coverage_match_album["match_album17"] = True
+    else:
+        branch_coverage_match_album["match_album18"] = True
 
 def match_track(
     artist: str,

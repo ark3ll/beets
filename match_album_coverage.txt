@@ -1,0 +1,20 @@
+match_album1 was hit
+match_album2 was hit
+match_album3 was hit
+match_album4 was hit
+match_album5 was hit
+match_album6 was hit
+match_album7 was not hit
+match_album8 was hit
+match_album9 was hit
+match_album10 was not hit
+match_album11 was hit
+match_album12 was hit
+match_album13 was hit
+match_album14 was hit
+match_album15 was hit
+match_album16 was hit
+match_album17 was not hit
+match_album18 was hit
+
+Coverage Percentage: 83.33%

@@ -885,6 +885,24 @@ class MBLibraryTest(unittest.TestCase):
                 self.assertEqual(ai.tracks[0].title, "foo")
                 self.assertEqual(ai.album, "hi")
 
+    def test_match_album_extra_tags(self):
+        mbid = "d2a6f856-b553-40a0-ac54-a321e8e2da99"
+        with mock.patch("musicbrainzngs.search_releases") as sp:
+            sp.return_value = {
+                "release-list": [
+                    {
+                        "id": mbid,
+                    }
+                ],
+            }
+            ail = list(mb.match_album("hello", "there", 1, {"country" : 3209023}))
+            sp.assert_called_with(limit=5, release="there", artist="hello", tracks = "1", country = "3209023")
+
+    def test_match_album_none(self):
+        with mock.patch("musicbrainzngs.search_releases") as p:
+            ail = list(mb.match_album(None, " "))
+            p.assert_called_with(limit=5, release = "", arid = "89ad4ac3-39f7-470e-963a-56509c546377")
+
     def test_match_track_empty(self):
         with mock.patch("musicbrainzngs.search_recordings") as p:
             til = list(mb.match_track(" ", " "))
