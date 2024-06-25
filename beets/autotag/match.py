@@ -47,6 +47,8 @@ from beets.autotag import (
 from beets.library import Item
 from beets.util import plurality
 from beets.util.enumeration import OrderedEnum
+from beets.util.coverage_tracker import branch_coverage, calculate_coverage, write_coverage_to_file, register_coverage_tracker
+
 
 # Artist signals that indicate "various artists". These are used at the
 # album level to determine whether a given release is likely a VA
@@ -326,6 +328,17 @@ def distance(
     return dist
 
 
+branch_coverage_match_by_id = {
+    "match_by_id_try": False,
+    "match_by_id_except_stop_iteration": False,
+    "match_by_id_if_no_consensus": False,
+    "match_by_id_else_consensus": False,
+    "match_by_id_final": False,
+    "match_by_id_in_for_loop": False
+}
+
+register_coverage_tracker(branch_coverage_match_by_id, 'coverage_data_match_by_id.txt')
+
 def match_by_id(items: Iterable[Item]):
     """If the items are tagged with a MusicBrainz album ID, returns an
     AlbumInfo object for the corresponding album. Otherwise, returns
@@ -334,19 +347,29 @@ def match_by_id(items: Iterable[Item]):
     albumids = (item.mb_albumid for item in items if item.mb_albumid)
 
     # Did any of the items have an MB album ID?
-    try:
+    try:  
+        branch_coverage_match_by_id["match_by_id_try"] = True
         first = next(albumids)
-    except StopIteration:
+    except StopIteration:  
+        branch_coverage_match_by_id["match_by_id_except_stop_iteration"] = True
         log.debug("No album ID found.")
         return None
 
     # Is there a consensus on the MB album ID?
     for other in albumids:
-        if other != first:
+        branch_coverage_match_by_id["match_by_id_in_for_loop"] = True
+        if other != first:  
+            branch_coverage_match_by_id["match_by_id_if_no_consensus"] = True
             log.debug("No album ID consensus.")
             return None
+        else:  
+            branch_coverage_match_by_id["match_by_id_else_consensus"] = True
+    else:
+        branch_coverage_match_by_id["match_by_id_final"] = True
+
+
     # If all album IDs are equal, look up the album.
-    log.debug("Searching for discovered album ID: {0}", first)
+    log.debug("Searching for discovered album ID: {0}", first) 
     return hooks.album_for_mbid(first)
 
 
