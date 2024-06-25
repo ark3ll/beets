@@ -1,0 +1,4 @@
+add_dist_fail was hit
+add_dist_good was hit
+
+Coverage Percentage: 100.00%
