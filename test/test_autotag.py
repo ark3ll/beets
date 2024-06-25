@@ -156,6 +156,23 @@ class DistanceTest(_common.TestCase):
         dist.add("add", 1.0)
         self.assertEqual(dist._penalties, {"add": [1.0]})
 
+    def test_add_griffiti(self):
+        dist = Distance()
+        dist.add("add", 2.0)
+        self.assertEqual(dist._penalties, {"add": [2.0]})
+
+    def test_update_griffiti(self):
+        dist1 = Distance()
+        dist1.add("album", 0.5)
+        dist1.add("media", 1.0)
+
+        dist2 = None
+
+        dist1.update(dist2)
+        self.assertEqual(
+            dist1._penalties, {"album": [0.5], "media": [1.0]}
+        )
+        
     def test_add_equality(self):
         dist = Distance()
         dist.add_equality("equality", "ghi", ["abc", "def", "ghi"])
