@@ -1,0 +1,4 @@
+configure1 was hit
+configure2 was hit
+
+Coverage Percentage: 100.00%

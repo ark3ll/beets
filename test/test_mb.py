@@ -660,7 +660,53 @@ class MBAlbumInfoTest(_common.TestCase):
         self.assertEqual(len(t), 2)
         self.assertIsNone(t[0].trackdisambig)
         self.assertEqual(t[1].trackdisambig, "SECOND TRACK")
-
+        
+    
+    def test_my_configure_tests(self):
+        mb.config["musicbrainz"]["host"] = "musicbrainz.or"
+        mb.configure()
+        self.assertEqual(mb.musicbrainzngs.hostname, "musicbrainz.org")
+        mb.config["musicbrainz"]["host"] = "musicbrainz.org"
+        mb.configure()
+    
+    
+    def test_my_track_info_tests(self):
+        #Note: these tests don't directly call mb.track_info(), but mb.album_info() does
+        #ISRC lists
+        tracks = [self._make_track("Title", "ID", 100.0)]
+        tracks[0]["isrc-list"] = ("1234567890ab", "abcdefghijkl")
+        release = self._make_release(tracks=tracks)
+        d = mb.album_info(release)
+        t = d.tracks
+        self.assertEqual(t[0].isrc, "1234567890ab;abcdefghijkl")
+        
+        #work and artist relations
+        tracks = [
+            self._make_track("Title0", "ID0", 100.0),
+            self._make_track("Title1", "ID1", 100.0),
+            self._make_track("Title2", "ID2", 100.0),
+            self._make_track("Title3", "ID3", 100.0),
+            self._make_track("Title4", "ID4", 100.0)
+            ]
+        #make sure non-performances hit the continue at branch 10
+        tracks[0]["work-relation-list"] = ({"type": "not-performance"},)
+        #make sure works with disambiguations are covered by branch 12
+        tracks[1]["work-relation-list"] = ({"type": "performance", "work": {"title": "Title1", "id": "ID1", "disambiguation": "x"}},)
+        #make sure tracks with lyricists are covered
+        tracks[2]["work-relation-list"] = ({"type": "performance", "work": {"title": "Title2", "id": "ID2", "artist-relation-list": ({"type": "lyricist", "artist":{"name": "Lyricist2"}},)}},)
+        #make sure tracks with composers are covered
+        tracks[3]["work-relation-list"] = ({"type": "performance", "work": {"title": "Title3", "id": "ID3", "artist-relation-list": ({"type": "composer", "artist":{"name": "Composer3", "sort-name": "Composer3"}},)}},)
+        #make sure tracks with arrangers are covered
+        tracks[4]["artist-relation-list"] = ({"type": "arranger", "artist":{"name": "Arranger4"}},)
+        release = self._make_release(tracks=tracks)
+        d = mb.album_info(release)
+        t = d.tracks
+        self.assertEqual(t[1].work_disambig, "x")
+        self.assertEqual("Lyricist2", t[2].lyricist)
+        self.assertEqual("Composer3", t[3].composer)
+        self.assertEqual("Composer3", t[3].composer_sort)
+        self.assertEqual("Arranger4", t[4].arranger)
+    
 
 class ParseIDTest(_common.TestCase):
     def test_parse_id_correct(self):
