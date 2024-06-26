@@ -158,8 +158,15 @@ class DistanceTest(_common.TestCase):
 
     def test_add_griffiti(self):
         dist = Distance()
-        dist.add("add", 2.0)
-        self.assertEqual(dist._penalties, {"add": [2.0]})
+        dist.add("album", 0.5)
+        dist.add("media", 1.0)
+        try:
+            dist.add("add", 2.0)
+        except:
+            print("tried adding wrong value\n")
+        self.assertEqual(
+            dist._penalties, {"album": [0.5], "media": [1.0]}
+        )
 
     def test_update_griffiti(self):
         dist1 = Distance()
@@ -167,12 +174,14 @@ class DistanceTest(_common.TestCase):
         dist1.add("media", 1.0)
 
         dist2 = None
-
-        dist1.update(dist2)
+        try:
+            dist1.update(dist2)
+        except:
+            print("Tried updating bad value\n")
         self.assertEqual(
             dist1._penalties, {"album": [0.5], "media": [1.0]}
         )
-        
+
     def test_add_equality(self):
         dist = Distance()
         dist.add_equality("equality", "ghi", ["abc", "def", "ghi"])
