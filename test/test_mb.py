@@ -895,8 +895,44 @@ class MBLibraryTest(unittest.TestCase):
                     }
                 ],
             }
-            ail = list(mb.match_album("hello", "there", 1, {"country" : 3209023}))
-            sp.assert_called_with(limit=5, release="there", artist="hello", tracks = "1", country = "3209023")
+            with mock.patch("musicbrainzngs.get_release_by_id") as gp:
+                gp.return_value = {
+                    "release": {
+                        "title": "hi",
+                        "id": mbid,
+                        "status": "status",
+                        "medium-list": [
+                            {
+                                "track-list": [
+                                    {
+                                        "id": "baz",
+                                        "recording": {
+                                            "title": "foo",
+                                            "id": "bar",
+                                            "length": 42,
+                                        },
+                                        "position": 9,
+                                        "number": "A1",
+                                    }
+                                ],
+                                "position": 5,
+                            }
+                        ],
+                        "artist-credit": [
+                            {
+                                "artist": {
+                                    "name": "some-artist",
+                                    "id": "some-id",
+                                },
+                            }
+                        ],
+                        "release-group": {
+                            "id": "another-id",
+                        },
+                    }
+                }
+                ail = list(mb.match_album("hello", "there", 1, {"country" : 3209023}))
+                sp.assert_called_with(limit=5, release="there", artist="hello", tracks = "1", country = "3209023")
 
     def test_match_album_none(self):
         with mock.patch("musicbrainzngs.search_releases") as p:
